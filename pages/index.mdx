@@ -1,11 +1,84 @@
-# Introduction
+# Getting started with Haven
 
-Welcome to Nextra! This is a basic docs template. You can use it as a starting point for your own project :)
+Haven helps you deploy open-source LLMs in your own cloud.
 
-## What is Nextra?
+## Installation
 
-A **simple**, **powerful** and **flexible** site generation framework with everything you love from Next.js.
+Haven comes as a docker image. We use this image to create what we call the manager. This container can be deployed anywhere you like and will be responsible for spinning up and managing all additional resources you want to run your LLMs on.
 
-## Documentation
+**The fastest and easiest way to get Haven running is using the GCloud CLI.**
 
-The documentation is available at [https://nextra.site](https://nextra.site).
+### 1. Create a Service Account
+
+**Prerequisites**:\
+You have a Google Cloud account and have the gcloud CLI installed.
+
+1. Haven uses [Service Accounts](https://cloud.google.com/iam/docs/service-account-overview) to create resources on GCP. Create one running this command:
+
+```bash copy
+gcloud iam service-accounts create haven-service-account --project=<your-project-id>
+```
+
+2. Assign the service account the role of an editor
+
+```bash copy
+gcloud projects add-iam-policy-binding <your-project-id> --member="serviceAccount:haven-service-account@<your-project-id>.iam.gserviceaccount.com" --role="roles/editor"
+```
+
+3. Download the service account file
+
+```bash copy
+gcloud iam service-accounts keys create ./key.json --iam-account=haven-service-account@<your-project-id>.iam.gserviceaccount.com
+```
+
+### 2. Deploy Haven
+
+We recommend to run Haven inside GCP, since that is where resources will be created. That way, the resources Haven creates for you are **as close to the deployment as possible**.
+
+This is how you can set up a Haven instance with one `gcloud` command.
+
+[//]: # "TODO: update registry path, add a machine type and add an auth token"
+
+```bash copy
+gcloud compute instances create-with-container <manager-instance-name> --container-image gcr.io/PROJECT_ID/IMAGE_NAME --machine-type MACHINE_TYPE
+```
+
+### 3. Add your Service Account
+
+Almost done! The last step now is to start calling your Haven deployment with one of our SDKs.
+
+```bash copy
+pip install havenllm
+```
+
+```python copy
+from havenllm import haven
+client = Haven("<address of your deployment>:50051", "<bearer token from step 2>")
+
+# Now you can add your google cloud service account file to the deployment
+with open("key.json", "r") as f:
+	client.setup(key_file=f.read())
+```
+
+### 4. Enjoy
+
+You're done! Here are some things you can do with Haven:
+
+```python filename="python" copy
+# Create a worker running the mpt-7b-chat model from Huggingface
+worker_id = client.create_inference_worker(
+	model_name="@huggingface/mosaicml/mpt-7b-chat",
+	quantization="float16", gpu_type="A100", gpu_count=1)
+
+print(worker_id)
+```
+
+Now we wait until the worker is running. This takes around 10 min depending on the model size. After it started up, you can integrate it into your product like this:
+
+```python filename="python" copy
+res = client.generate(worker_id, "Give me a recipe for cake!", stream=True)
+for r in res:
+	print(r.text)
+```
+
+Congrats! You are now using open-source LLMs in your own cloud.

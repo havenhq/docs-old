@@ -1,7 +1,7 @@
 {
-  "index": "Introduction",
-  "another": "Another Page",
-  "advanced": "Advanced (A Folder)",
+  "index": "Getting Started",
+  "reference": "Reference",
+  "development": "Development",
   "website": {
     "title": "Website ↗",
     "type": "page",

@@ -1,0 +1,52 @@
+# Development
+
+How to run Haven in dev mode and contribute to the project.
+
+## Project structure
+
+```bash
+/manager 	# Haven deployment
+/proto 		# API definitions
+/sdk		# SDK code
+/worker		# Code that runs on a worker that is spawned by the manager
+```
+
+### Running the manager locally
+
+You can run the manager on your machine by installing the dependencies and running `npm run dev` inside the `/manager` directory. You can just drop your `./key.json` file inside `/manager` or alternatively provide it as you would when setting up Haven normally.
+
+### Modifying and testing worker code
+
+I'm open to suggestions here, but this is the way we're developing the worker when making quick edits:
+
+1. Create a worker using the SDK
+
+2. SSH into the machine that is running the worker (you can do this using the `gcloud` CLI or the Google Cloud Console web-UI)
+
+3. Switch to superuser using `sudo su`
+
+4. Run `docker container ps -a` to identify the container that is currently running the Haven worker
+
+```filename="example output"
+CONTAINER ID   IMAGE                          COMMAND           CREATED         STATUS         PORTS                    NAMES
+c8ba242a97be   haven/haven-worker   "python -m app"   5 minutes ago   Up 5 minutes   0.0.0.0:5001->5001/tcp   friendly_mcnulty
+```
+
+5. Stop this container using `docker stop c8ba242a97be`
+
+6. Now, you can create a new docker container from the Haven image and run bash inside using this command:
+
+```bash copy
+docker run -it -v /usr/local/nvidia:/usr/local/nvidia -v ~/config.json:/app/config.json --gpus all -p 50051:50051 konsti1/peacefulplace-worker /bin/bash
+```
+
+This should open a bash terminal inside the docker container. If you want you can install vim (or any other editor) by running.
+
+```bash
+apt update
+apt install vim -y
+```
+
+To make changes, edit the files accordingly. To run the worker, run python -m app from the working directory of the container (you can get there with cd /app)
+
+While python is running, you can send requests to the worker as you normally would using the manager.
