@@ -35,8 +35,7 @@ gcloud iam service-accounts keys create ./key.json --iam-account=haven-service-a
 
 We recommend to run Haven inside GCP, since that is where resources will be created. That way, the resources Haven creates for you are **as close to the deployment as possible**.
 
-This is how you can set up a Haven instance with one `gcloud` command.
-
+The command below lets you set up a Haven manager instance with one `gcloud` command. A bearer token can be passed that will have to be passed to every call to your manager to authenticate users.
 [//]: # "TODO: update registry path, add a machine type and add an auth token"
 
 ```bash copy
