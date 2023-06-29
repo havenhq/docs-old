@@ -40,7 +40,7 @@ The command below lets you set up a Haven manager instance with one `gcloud` com
 [//]: # "TODO: update registry path, add a machine type and add an auth token"
 
 ```bash copy
-gcloud compute instances create-with-container <manager-instance-name> --container-image gcr.io/havenhq/haven --machine-type n1-standard-1 --container-env BEARER_TOKEN=<your-bearer-token> --tags==http-server,https-server,permissive-firewall-rule
+gcloud compute instances create-with-container <manager-instance-name> --container-image havenhq/haven --machine-type n1-standard-1 --container-env BEARER_TOKEN=<your-bearer-token> --tags==http-server,https-server,permissive-firewall-rule
 ```
 
 ### 3. Add your Service Account
