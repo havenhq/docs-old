@@ -33,14 +33,21 @@ gcloud iam service-accounts keys create ./key.json --iam-account=haven-service-a
 
 ### 2. Deploy Haven
 
-We recommend to run Haven inside GCP, since that is where resources will be created. That way, the resources Haven creates for you are **as close to the deployment as possible**.
+We recommend to run Haven inside GCP, since that is where resources will be created. That way, the resources Haven creates for you are **as close to the deployment as possible**. Haven's components communicate over ports 80, 5000, 50051 and 50052. Depending on your existing settings, you might have to configure your firewall settings to enable communication:
 
-The command below lets you set up a Haven manager instance with one `gcloud` command. A bearer token can be passed that will have to be passed to every call to your manager to authenticate users.
+```bash copy
+gcloud compute firewall-rules create allow-http --allow tcp:80 --target-tags http-server
+gcloud compute firewall-rules create allow-5000 --allow tcp:5000 --target-tags http-server
+gcloud compute firewall-rules create allow-50051 --allow tcp:50051 --target-tags http-server
+gcloud compute firewall-rules create allow-50052 --allow tcp:50052 --target-tags http-server
+```
+
+Afterwards, the command below lets you set up a Haven manager instance with one `gcloud` command. A bearer token can be passed that will be used to authenticate users trying to make requests to the Haven manager.
 
 [//]: # "TODO: update registry path, add a machine type and add an auth token"
 
 ```bash copy
-gcloud compute instances create-with-container <manager-instance-name> --container-image havenhq/haven --machine-type n1-standard-1 --container-env BEARER_TOKEN=<your-bearer-token> --tags==http-server,https-server,permissive-firewall-rule
+gcloud compute instances create-with-container <manager-instance-name> --container-image havenhq/haven --machine-type n1-standard-1 --container-env BEARER_TOKEN=<your-bearer-token> --tags==http-server,https-server
 ```
 
 ### 3. Add your Service Account
