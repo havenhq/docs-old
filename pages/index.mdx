@@ -33,11 +33,9 @@ gcloud iam service-accounts keys create ./key.json --iam-account=haven-service-a
 
 ### 2. Deploy Haven
 
-We recommend to run Haven inside GCP, since that is where resources will be created. That way, the resources Haven creates for you are **as close to the deployment as possible**. Haven's components communicate over ports 80, 5000, 50051 and 50052. Depending on your existing settings, you might have to configure your firewall settings to enable communication:
+We recommend to run Haven inside GCP, since that is where resources will be created. That way, the resources Haven creates for you are **as close to the deployment as possible**. Haven's components communicate over ports 50051 and 50052. Depending on your existing settings, you might have to configure your firewall settings to enable communication:
 
 ```bash copy
-gcloud compute firewall-rules create allow-http --allow tcp:80 --target-tags http-server
-gcloud compute firewall-rules create allow-5000 --allow tcp:5000 --target-tags http-server
 gcloud compute firewall-rules create allow-50051 --allow tcp:50051 --target-tags http-server
 gcloud compute firewall-rules create allow-50052 --allow tcp:50052 --target-tags http-server
 ```
