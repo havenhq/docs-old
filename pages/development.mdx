@@ -37,7 +37,7 @@ c8ba242a97be   havenhq/worker   "python -m app"   5 minutes ago   Up 5 minutes  
 6. Now, you can create a new docker container from the Haven image and run bash inside using this command:
 
 ```bash copy
-docker run -it -v /usr/local/nvidia:/usr/local/nvidia -v ~/config.json:/app/config.json --gpus all -p 50051:50051 havenhq/worker /bin/bash
+docker run -it -v /usr/local/nvidia:/usr/local/nvidia -v ~/config.json:/app/config.json --gpus all --shm-size=10.24gb -p 50051:50051 havenhq/worker /bin/bash
 ```
 
 This should open a bash terminal inside the docker container. If you want you can install vim (or any other editor) by running.
