@@ -45,8 +45,10 @@ Afterwards, the command below lets you set up a Haven manager instance with one 
 [//]: # "TODO: update registry path, add a machine type and add an auth token"
 
 ```bash copy
-gcloud compute instances create-with-container <manager-instance-name> --container-image havenhq/haven --machine-type n1-standard-1 --container-env BEARER_TOKEN=<your-bearer-token> --tags==http-server,https-server
+gcloud compute instances create-with-container <manager-instance-name> --container-image havenhq/haven --machine-type n1-standard-1 --container-env BEARER_TOKEN=<your-bearer-token> --tags=http-server,https-server
 ```
+
+You might get asked to select a project. In that case, you can add the `--project <project-id>` flag to the command above.
 
 ### 3. Add your Service Account
 
@@ -81,7 +83,11 @@ print(worker_id)
 Now we wait until the worker is running. This takes around 10 min depending on the model size. After it started up, you can integrate it into your product like this:
 
 ```python filename="python" copy
-res = client.generate(worker_id, "Give me a recipe for cake!", stream=True)
+res = client.chat_completion(worker_id, messages=[{
+	"content": "Write a newspaper article about Marc Zuckerberg.",
+	"role": "USER"
+}], stream=True)
+
 for r in res:
 	print(r.text)
 ```
