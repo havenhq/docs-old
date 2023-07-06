@@ -1,0 +1,99 @@
+# Supported Models
+
+Haven implements model classes that are defined by a model's architecture (e.g. `MPTForCausalLM`) and its number of weights. 
+
+This does however not mean that a single model class corresponds to a single model as it can be found on Huggingface - a single model class can support various models with different weights (e.g. `mpt_7b` supports `mosaicml/mpt-7b-instruct` and `mosaicml/mpt-7b-chat`).
+
+A model class can be mapped to multiple configurations, which are defined by the GPU types, the number of GPUs as well as the quantization format different models can be deployed with. Below, you can find 
+
+Below, you can find all of our supported models. We're constantly adding new models and deployment configs, so keep tabs on this page!
+
+
+
+## List of Supported Models
+
+
+### `falcon_7b`:
+
+**Supported Models:**
+
+- `@huggingface/h2oai/h2ogpt-gm-oasst1-en-2048-falcon-7b-v2`
+
+
+**Deployment Configurations:**
+
+
+| quantization | gpu_type    | gpu_count    |
+| ------------ | ----------- | ----------- |
+| `float16`       | `A100`      | `1` |
+
+
+
+
+### `gpt_neox_12b`:
+
+**Supported Models:**
+
+- `@huggingface/OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5
+
+
+**Deployment Configurations:**
+
+
+| quantization | gpu_type    | gpu_count    |
+| ------------ | ----------- | ----------- |
+| `float16`       | `A100`      | `1` |
+
+
+
+
+### `llama_7b`:
+
+**Supported Models:**
+
+- `@huggingface/h2oai/h2ogpt-gm-oasst1-en-2048-open-llama-7b`
+
+
+**Deployment Configurations:**
+
+
+| quantization | gpu_type    | gpu_count    |
+| ------------ | ----------- | ----------- |
+| `float16`       | `A100`      | `1` |
+
+
+
+
+### `llama_13b`:
+
+**Supported Models:**
+
+- `@huggingface/h2oai/h2ogpt-gm-oasst1-en-2048-open-llama-13b`
+
+
+**Deployment Configurations:**
+
+
+| quantization | gpu_type    | gpu_count    |
+| ------------ | ----------- | ----------- |
+| `float16`       | `A100`      | `1` |
+
+
+
+
+### `mpt_7b`:
+
+**Supported Models:**
+
+- `@huggingface/mosaicml/mpt-7b-instruct`
+- `@huggingface/mosaicml/mpt-7b-chat`
+
+
+**Deployment Configurations:**
+
+
+| quantization | gpu_type    | gpu_count    |
+| ------------ | ----------- | ----------- |
+| `float16`       | `A100`      | `1` |
+
+
