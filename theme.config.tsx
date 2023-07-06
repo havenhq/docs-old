@@ -21,7 +21,7 @@ const config: DocsThemeConfig = {
 		<>
 			<script
 				defer
-				data-domain="haven.run"
+				data-domain="docs.haven.run"
 				src="https://plausible.io/js/script.js"
 			></script>
 		</>
