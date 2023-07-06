@@ -17,6 +17,15 @@ const config: DocsThemeConfig = {
 	footer: {
 		text: "With <3 from Justus and Konsti.",
 	},
+	head: (
+		<>
+			<script
+				defer
+				data-domain="haven.run"
+				src="https://plausible.io/js/script.js"
+			></script>
+		</>
+	),
 };
 
 export default config;
