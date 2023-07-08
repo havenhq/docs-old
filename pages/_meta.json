@@ -3,6 +3,7 @@
   "models": "Supported Models",
   "reference": "Reference",
   "development": "Development",
+  "telemetry": "Telemetry",
   "website": {
     "title": "Website ↗",
     "type": "page",
