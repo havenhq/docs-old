@@ -19,6 +19,8 @@ const config: DocsThemeConfig = {
 	},
 	head: (
 		<>
+			<link rel="icon" type="image/ico" href="/favicon.ico" />
+
 			<script
 				defer
 				data-domain="docs.haven.run"
