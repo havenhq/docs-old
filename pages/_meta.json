@@ -3,6 +3,7 @@
   "models": "Supported Models",
   "guides": "Guides",
   "reference": "API Reference",
+  "gcloud_guide": "Google Cloud Guide",
   "development": "Development",
   "telemetry": "Telemetry",
   "website": {
