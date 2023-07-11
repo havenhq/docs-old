@@ -1,7 +1,8 @@
 {
   "index": "Getting Started",
   "models": "Supported Models",
-  "reference": "Reference",
+  "guides": "Guides",
+  "reference": "API Reference",
   "development": "Development",
   "telemetry": "Telemetry",
   "website": {

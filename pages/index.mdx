@@ -1,62 +1,67 @@
 # Getting started with Haven
 
-Haven helps you deploy open-source LLMs in your own cloud.
+Let's get started with Haven! On this page, we are going to spin up your first model in four easy steps:
 
-## Installation
+1. Deploy Haven's manager container on Google Cloud
+2. Create a Google Cloud service account
+3. Upload your service account credentials to the manager
+4. Spin up your first model
 
-Haven comes as a docker image. It can be deployed anywhere you like and will be responsible for spinning up and managing all additional resources you want to run your LLMs on.
 
-**The fastest and easiest way to get Haven running is using the GCloud CLI.**
 
-### 1. Create a Service Account
+### 1. Deploy Haven's manager on Google Cloud
 
-**Prerequisites**:\
-You have a Google Cloud account and have the gcloud CLI installed. Installation instructions for the gcloud CLI can be found [here](https://cloud.google.com/sdk/docs/install?hl=en)
-
-1. Haven uses [Service Accounts](https://cloud.google.com/iam/docs/service-account-overview) to create resources on GCP. Create one running this command:
+You can deploy Haven's manager from its docker image using the gcloud CLI ([Installation instructions](https://cloud.google.com/sdk/docs/install?hl=en#deb)). You can optionally choose a `BEARER_TOKEN` to authenticate users sending requests to your LLM server.
 
 ```bash copy
-gcloud iam service-accounts create haven-service-account --project=<your-project-id>
+gcloud compute instances create-with-container haven-manager \
+  --container-image havenhq/haven \
+  --machine-type e2-micro \
+  --tags=https-server,http-server \
+  --container-env BEARER_TOKEN=<some-bearer-token>
 ```
 
-Your project ID is the ID of the project you want to deploy Haven in. You can find it in the [GCP console](https://console.cloud.google.com/). The dropdown in the top left corner shows you the project IDs of all of your projects.
-
-2. Assign the service account the role of an editor
-
-```bash copy
-gcloud projects add-iam-policy-binding <your-project-id> --member="serviceAccount:haven-service-account@<your-project-id>.iam.gserviceaccount.com" --role="roles/editor"
-```
-
-3. Download the service account file
-
-```bash copy
-gcloud iam service-accounts keys create ./key.json --iam-account=haven-service-account@<your-project-id>.iam.gserviceaccount.com
-```
-
-### 2. Deploy Haven
-
-We recommend to run Haven inside GCP, since that is where resources will be created. That way, the resources Haven creates for you are **as close to the deployment as possible**. Haven's components use GRPC and communicate over ports 50051 and 50052. Depending on your existing settings, you might have to configure your firewall settings to enable communication:
+To communicate with Haven's manager, you need to expose port 50051 and 50052:
 
 ```bash copy
 gcloud compute firewall-rules create allow-50051 --allow tcp:50051 --target-tags http-server
 gcloud compute firewall-rules create allow-50052 --allow tcp:50052 --target-tags http-server
 ```
 
-Afterwards, the command below lets you set up a Haven manager instance with one `gcloud` command. A bearer token can be passed that will be used to authenticate a client (likely you using the SDK) trying to make requests to the Haven manager.
+
+### 2. Create a Google Cloud Service Account
+
+To give Haven's manager the permission to spin up resources for you, you need to create a service account whose credentials can be passed to the manager. You also need to specify a project id for the service account (you can find all project ids using `gcloud projects list`).
 
 ```bash copy
-gcloud compute instances create-with-container haven-manager --container-image havenhq/haven --machine-type e2-micro --container-env BEARER_TOKEN=<some-bearer-token> --tags=http-server,https-server
+gcloud iam service-accounts create haven-service-account --project=<your-project-id>
 ```
 
-You might get asked to select a project. In that case, you can add the `--project <project-id>` flag to the command above.
+Now, assign the service account the role of an editor:
 
-### 3. Add your Service Account
+```bash copy
+gcloud projects add-iam-policy-binding <your-project-id> \
+  --role="roles/editor" \
+  --member="serviceAccount:haven-service-account@<your-project-id>.iam.gserviceaccount.com"
+```
 
-Almost done! The last step now is to start calling your Haven deployment with one of our SDKs.
+Finally, download the service account key file:
+
+```bash copy
+gcloud iam service-accounts keys create ./key.json \
+  --iam-account=haven-service-account@<your-project-id>.iam.gserviceaccount.com
+```
+
+
+### 3. Upload your key file to the manager
+
+Almost done! You now need to upload your service account key file to the manager. You can do so using Haven's sdk. First, install the sdk:
 
 ```bash copy
 pip install havenpy
 ```
+
+Now, connect to your manager and upload your key file:
 
 ```python copy
 from havenpy import Haven
@@ -67,29 +72,37 @@ with open("key.json", "r") as f:
 	client.setup(key_file=f.read())
 ```
 
-### 4. Enjoy
 
-You're done! Here are some things you can do with Haven:
+### 4. Spin up your first LLM server
+
+Awesome, you're set up! Now, you can easily spin up your first LLM server with just a single line of code:
 
 ```python filename="python" copy
 # Create a worker running the mpt-7b-chat model from Huggingface
 worker_id = client.create_inference_worker(
 	model_name="@huggingface/mosaicml/mpt-7b-chat",
-	quantization="float16", gpu_type="A100", gpu_count=1)
+	quantization="float16", gpu_type="T4", gpu_count=2)
 
 print(worker_id)
 ```
 
-Now we wait until the worker is running. This takes around 10 min depending on the model size. After it started up, you can integrate it into your product like this:
+When checking `gcloud compute instances list`, you'll now be able to see your VM instance starting. After starting, it will set up a docker container and download the model weights. This usually takes around 5-20 minutes, depending on the model size. To check whether your model is ready to be called, you can read the worker's status:
 
-```python filename="python" copy
+```python copy
+print(client.list_workers())
+```
+
+If the server is still getting set up, it will show `STATUS: LOADING`. If it is running, the status will be `ONLINE` and you're ready to make your first call! Here is how you can do it:
+
+
+```python copy
 res = client.chat_completion(worker_id, messages=[{
 	"content": "Write a newspaper article about Marc Zuckerberg.",
 	"role": "USER"
 }], stream=True)
 
 for r in res:
-	print(r.text)
+	print(r.text, flush=True, end="")
 ```
 
 Congrats! You are now using open-source LLMs in your own cloud.

@@ -1,0 +1,116 @@
+# Deploy Huggingface Models
+
+You can use any model from Huggingface as long as its architecture is supported by Haven. Below is a list of currently supported architectures, a detailed explanation of architectures can be found [here](https://docs.haven.run/models):
+
+- `gpt_neox_3b`
+- `gpt_neox_7b`
+- `gpt_neox_12b`
+- `llama_7b`
+- `llama_13b`
+- `mpt_7b`
+- `mpt_30b`
+
+### Adding a Model
+
+As an example, we are going to add models from the `gpt_neox_12b` model class. We now have two options: 
+We can either add a model as a simple completion model, which allows us to make API calls that simply complete a given text. In this case, we won't have to add any chat templates ourselves. Alternatively, we can add the model as a chat model. In this case, we have to supply the chat prompt template when adding the model.
+
+
+**Adding a Completion Model**:
+
+To add `EleutherAI/pythia-12b` as a completion model, we can run the following code:
+
+```python filename="add_completion_model" copy
+from havenpy import Haven
+client = Haven("<ip-adress-of-your-vm>:50051", "<your-bearer-token>")
+
+client.add_model(
+    architecture="gpt_neox_12b",
+    name="@huggingface/EleutherAI/pythia-12b",
+    tokenizer="@huggingface/EleutherAI/pythia-12b"
+)
+
+print(client.list_models()) # Check if the model was added correctly
+```
+
+Great! We can now spin up an inference worker for the model:
+
+```python copy
+worker_id = client.create_inference_worker(
+	model_name="@huggingface/EleutherAI/pythia-12b",
+	quantization="float16", gpu_type="A100", gpu_count=1)
+
+print(worker_id)
+```
+
+Now, we can repeatedly check if our model is up or still loading:
+
+```python copy
+print(client.list_workers())
+```
+
+When the model is running, we can make a completion call:
+
+```python copy
+output = client.completion(worker_id, prompt="Open source software is cool because")
+print(output)
+```
+
+
+**Adding a Chat Model**:
+
+Adding a chat model, in this case `databricks/dolly-v2-12b`, is a very similar process. We only have to supply a chat template:
+
+```python filename="add_completion_model" copy
+from havenpy import Haven
+client = Haven("<ip-adress-of-your-vm>:50051", "<your-bearer-token>")
+
+client.add_model(
+    architecture="gpt_neox_12b", 
+    name="@huggingface/databricks/dolly-v2-12b",
+    tokenizer="@huggingface/databricks/dolly-v2-12b"
+    system_prompt="Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n",
+    instruction_prefix="### Instruction: ",
+    instruction_postfix="\n",
+    output_prefix="### Response: ",
+    output_postfix="### End\n"
+)
+
+
+print(client.list_models()) # Check if the model was added correctly
+```
+
+Great! We can now spin up an inference worker for the model:
+
+```python copy
+worker_id = client.create_inference_worker(
+	model_name="@huggingface/databricks/dolly-v2-12b",
+	quantization="float16", gpu_type="A100", gpu_count=1)
+
+print(worker_id)
+```
+
+Now, we can repeatedly check if our model is up or still loading:
+
+```python copy
+print(client.list_workers())
+```
+
+When the chat model is running, we can make either a completion call or a chat_completion call:
+
+```python copy
+# Chat Completion Call
+output = client.chat_completion(
+    worker_id, 
+    messages=[{"content": "Please explain to me the advantages of open source software.", "role": "USER"}]
+)
+print(output)
+
+# Equivalent Completion Call
+output = client.completion(
+    worker_id, 
+    prompt="Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction: Please explain to me the advantages of open source software\n### Response:"
+)
+print(output)
+
+```
