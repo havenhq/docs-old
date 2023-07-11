@@ -5,14 +5,13 @@ Haven collects **anonymous** usage data to better understand how we can improve 
 ### What Haven reports
 
 Haven anonymously collects two types of events:
-- resource creation events (spinning up a manager or inference worker)
-- health checks for running inference workers
+
+-   resource creation events (spinning up a manager or inference worker)
+-   manager version checks (to check if there is a new version available)
 
 ### Disable Telemetry
 
 To opt out of usage data collection, you can pass an environment variable `DISABLE_TELEMETRY=true` when creating the manager:
-
-
 
 ```bash copy
 gcloud compute instances create-with-container haven-manager --container-image havenhq/haven --machine-type e2-micro --container-env BEARER_TOKEN=<some-bearer-token> --container-env DISABLE_TELEMETRY=true --tags=http-server,https-server
