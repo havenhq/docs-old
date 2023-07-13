@@ -1,6 +1,239 @@
-# Python
+# Haven Python Client API Reference
+
+This document provides an overview of the functions available in the Haven Python client API.
 
 You can use Haven's python client by installing it with `pip install havenpy`
+
+Some example code can be found [here](#example-code)
+
+## `Haven`
+
+`Haven(url: str, token: str)`
+
+### Description
+
+The constructor for the Haven client. It initializes the client with the specified URL and authentication token.
+
+### Parameters
+
+-   `url` (str): The URL of the Haven service.
+-   `token` (str): The authentication token used to access the Haven service.
+
+---
+
+## `setup`
+
+`setup(key_file: str = None) -> None`
+
+### Description
+
+Performs the initial setup of the Haven service.
+
+### Parameters
+
+-   `key_file` (str, optional): The key file for setup (if required).
+
+---
+
+## `chat_completion`
+
+`chat_completion(worker_name: str, messages: List[Message], stream: bool = False, max_tokens: int = -1, top_p: float = -1, top_k: int = -1, temperature: float = -1) -> Union[CompletionResponse, str]`
+
+### Description
+
+Generates text completion for a chat-based interaction.
+
+### Parameters
+
+-   `worker_name` (str): The name of the worker responsible for generating completions.
+-   `messages` (List[Message]): A list of messages in the chat conversation.
+-   `stream` (bool, optional): Whether to stream the completion responses or return as a string. Defaults to `False`.
+-   `max_tokens` (int, optional): The maximum number of tokens to generate. Defaults to `-1`.
+-   `top_p` (float, optional): The nucleus sampling parameter (0-1). Defaults to `-1`.
+-   `top_k` (int, optional): The top-k sampling parameter. Defaults to `-1`.
+-   `temperature` (float, optional): The temperature parameter for randomness (0-1). Defaults to `-1`.
+
+### Returns
+
+-   If `stream=True`, it returns a stream of `CompletionResponse` objects.
+-   If `stream=False`, it returns the completion as a string.
+
+---
+
+## `completion`
+
+`completion(worker_name: str, prompt: str, stream: bool = False, max_tokens: int = -1, top_p: float = -1, top_k: int = -1, temperature: float = -1) -> Union[CompletionResponse, str]`
+
+### Description
+
+Generates text completion based on a given prompt.
+
+### Parameters
+
+-   `worker_name` (str): The name of the worker responsible for generating completions.
+-   `prompt` (str): The input prompt for text completion.
+-   `stream` (bool, optional): Whether to stream the completion responses or return as a string. Defaults to `False`.
+-   `max_tokens` (int, optional): The maximum number of tokens to generate. Defaults to `-1`.
+-   `top_p` (float, optional): The nucleus sampling parameter (0-1). Defaults to `-1`.
+-   `top_k` (int, optional): The top-k sampling parameter. Defaults to `-1`.
+-   `temperature` (float, optional): The temperature parameter for randomness (0-1). Defaults to `-1`.
+
+### Returns
+
+-   If `stream=True`, it returns a stream of `CompletionResponse` objects.
+-   If `stream=False`, it returns the completion as a string.
+
+---
+
+## `list_models`
+
+`list_models() -> ListModelsResponse`
+
+### Description
+
+Retrieves a list of available models and their descriptions.
+
+### Returns
+
+-   `ListModelsResponse`: A response object containing a list of models.
+
+---
+
+## `add_model`
+
+`add_model(architecture: str, name: str, tokenizer: str, system_prompt: str = None, instruction_prefix: str = None, instruction_postfix: str = None, output_prefix: str = None, output_postfix: str = None) -> Empty`
+
+### Description
+
+Adds a new model to the Haven service. To get a list of available architectures, go to Supported Models.
+
+### Parameters
+
+-   `architecture` (str): The architecture of the model.
+-   `name` (str): The name of the model.
+-   `tokenizer` (str): The tokenizer used by the model.
+-   `system_prompt` (str, optional): The system prompt for the model.
+-   `instruction_prefix` (str, optional): The instruction prefix for the model.
+-   `instruction_postfix` (str, optional): The instruction postfix for the model.
+-   `output_prefix` (str, optional): The output prefix for the model.
+-   `output_postfix` (str, optional): The output postfix for the model.
+
+### Returns
+
+-   `Empty`: An empty response object.
+
+---
+
+## `delete_model`
+
+`delete_model(name: str) -> Empty`
+
+### Description
+
+Deletes a model from the Haven service. You can only delete models you previously added yourself.
+
+### Parameters
+
+-   `name` (str): The name of the model to delete.
+
+### Returns
+
+-   `Empty`: An empty response object.
+
+---
+
+## `list_workers`
+
+`list_workers() -> List[Worker]`
+
+### Description
+
+Retrieves a list of workers and their statuses.
+
+### Returns
+
+-   `List[Worker]`: A list of workers and their statuses.
+
+---
+
+## `create_inference_worker`
+
+`create_inference_worker(model_name: str, quantization: str, worker_name: str = None, gpu_type: GpuType = None, gpu_count: int = None, zone: str = None) -> InferenceWorker`
+
+### Description
+
+Creates a new inference worker.
+
+### Parameters
+
+-   `model_name` (str): The name of the model to associate with the worker.
+-   `quantization` (str): The quantization method for the worker.
+-   `worker_name` (str, optional): The name of the worker. Defaults to `None`.
+-   `gpu_type` (GpuType, optional): The GPU type for the worker. Defaults to `None`.
+-   `gpu_count` (int, optional): The number of GPUs to allocate for the worker. Defaults to `None`.
+-   `zone` (str, optional): The zone for the worker. Defaults to `None`.
+
+### Returns
+
+-   `InferenceWorker`: A response object containing the created inference worker.
+
+---
+
+## `pause_inference_worker`
+
+`pause_inference_worker(worker_name: str) -> InferenceWorker`
+
+### Description
+
+Pauses an inference worker.
+
+### Parameters
+
+-   `worker_name` (str): The name of the worker to pause.
+
+### Returns
+
+-   `InferenceWorker`: A response object containing the paused inference worker.
+
+---
+
+## `resume_inference_worker`
+
+`resume_inference_worker(worker_name: str) -> InferenceWorker`
+
+### Description
+
+Resumes a paused inference worker.
+
+### Parameters
+
+-   `worker_name` (str): The name of the worker to resume.
+
+### Returns
+
+-   `InferenceWorker`: A response object containing the resumed inference worker.
+
+---
+
+## `delete_inference_worker`
+
+`delete_inference_worker(worker_name: str) -> InferenceWorker`
+
+### Description
+
+Deletes an inference worker.
+
+### Parameters
+
+-   `worker_name` (str): The name of the worker to delete.
+
+### Returns
+
+-   `InferenceWorker`: A response object containing the deleted inference worker.
+
+---
+
+## Example Code
 
 Here is a collection of example code snippets:
 
@@ -14,17 +247,19 @@ with open("./key.json", "r") as f:
 ```
 
 ```python filename="create_some_workers.py"
-rint(client.create_inference_worker(model_name="@huggingface/mosaicml/mpt-7b-chat", quantization="float16", gpu_type="T4", gpu_count=1))
-
+print(client.create_inference_worker(model_name="@huggingface/mosaicml/mpt-7b-chat", quantization="float16", gpu_type="T4", gpu_count=1))
 print(client.create_inference_worker(model_name="@huggingface/mosaicml/mpt-7b-instruct", quantization="float16", gpu_type="A100", gpu_count=1))
-
 print(client.create_inference_worker(model_name="@huggingface/h2oai/h2ogpt-gm-oasst1-en-2048-falcon-7b-v2", quantization="float16", gpu_type="T4", gpu_count=1))
 print(client.create_inference_worker(model_name="@huggingface/h2oai/h2ogpt-gm-oasst1-en-2048-falcon-7b-v2", quantization="float16", gpu_type="A100", gpu_count=1))
-
 print(client.create_inference_worker(model_name="@huggingface/togethercomputer/RedPajama-INCITE-Chat-3B-v1", quantization="float16", gpu_type="T4", gpu_count=1))
 ```
 
 ```python filename="chatbot.py"
+
+"""
+	Chatbot example using the Haven Python SDK.
+"""
+
 history = []
 
 while True:
